@@ -12,7 +12,7 @@ import javax.swing.*;
  */
 public class Cine {
     
-    //Función para mostrar los asientos.
+    //Función para guardar los asientos en la matriz.
     public static String[][] definirAsientos(){
         
         String asientos[][] = new String[11][11];
@@ -30,7 +30,7 @@ public class Cine {
         return salaCine;
 
     }
-    //Función para mostrar la sala de cine.
+    //Función para transformar la matriz en un string y vizualizarlo en el JOptionPane.
     public static String mostrarSala(String[][] salaCine){
         StringBuilder sc = new StringBuilder();
         
@@ -66,27 +66,39 @@ public class Cine {
         
         
     }
-    
-
     //Función calcular total
     public static Integer totalPagar(Integer valorBoleta,Integer cantidadAsientos, Integer nroCuotas, String optionSelect){
-        nroCuotas = Integer.parseInt(JOptionPane.showInputDialog(null,"¿En cuantas cuotas se desea generar la factura?"));
         Integer totalAPagar = 0;
         
+        if (optionSelect.equals("Tarjeta")) {
+            
+            
+            while (true) { 
+                nroCuotas = Integer.parseInt(JOptionPane.showInputDialog(null,"Digite la cantidad de cuotas"));
+                if (nroCuotas <= 0) {
+                    
+                    JOptionPane.showMessageDialog(null, "Nro de cuotas no puede ser igual a 0.");
+                }else{
+                    totalAPagar = (cantidadAsientos * valorBoleta) / nroCuotas;
+                    break;
+                }
+                
+            }
+            
+        }
+        
         if (optionSelect.equals("Efectivo")) {
-            totalAPagar = (cantidadAsientos * valorBoleta);
-        } else if(optionSelect.equals("Tarjeta")) {
-            totalAPagar = nroCuotas / (cantidadAsientos * valorBoleta);
+            totalAPagar = (valorBoleta * cantidadAsientos);
         }
         
         return totalAPagar;
-    } 
+    }
     
-
+    
     public static void main(String[] args) {
  
-        String respuestaFuncion[][] = definirAsientos();
-        String sc = mostrarSala(respuestaFuncion);
+        String salaCineActual[][] = definirAsientos();
+        String sc = mostrarSala(salaCineActual);
         Integer i = 0;
         Integer valorBoleta = 12000;
         String[] opciones = {"Agregar Más asientos","Elegir método pago"};
@@ -94,6 +106,7 @@ public class Cine {
         //Uso el acomulador para determinar la cantidad de asientos que elige.
         Integer cantidadAsientos=0;
         while (true) {
+            
             
             Integer asientos = Integer.parseInt(
             JOptionPane.showInputDialog(null, "Bienvenido a Cinemax. \n Digite la cantidad de asientos que desea reservar")
@@ -108,19 +121,20 @@ public class Cine {
                     """+(i+1)+"\n Ejemplo: (5:3) \n"+sc+"\n"
                 );
             
+                //Asigno lo asientos en base a las coordenadas
                 String[] coordenadas = coorAsientos.split(":");
-                //Asigno lo asientos en base a las coordenadas.
                 
-                respuestaFuncion = asignarAsiento(coordenadas, respuestaFuncion);
-            
+                //Asigno lo asientos en base a las coordenadas.
+                salaCineActual = asignarAsiento(coordenadas, salaCineActual);
             i++;
+            //Guardo la cantidad de asientos para poder calcular el total a pagar.
             cantidadAsientos +=1;
             }
 
             
         int opcion = JOptionPane.showOptionDialog(
                 null, 
-                "Asiento asignado: \n"+mostrarSala(respuestaFuncion)+"\n", 
+                "Asiento asignado: \n"+mostrarSala(salaCineActual)+"\n", 
                 "Cine", 
                 JOptionPane.DEFAULT_OPTION, 
                 JOptionPane.INFORMATION_MESSAGE, 
@@ -135,10 +149,9 @@ public class Cine {
                 break;
             }
             
-            
+             
         }
         
-        //TODO: colocar el multiselect y de paso calcular el total a pagar.
         //Combobox
         String[] opcionesComboBox = {"Efectivo","Tarjeta"};
         JComboBox combo1 =new JComboBox<String>(opcionesComboBox);
@@ -177,17 +190,16 @@ public class Cine {
         
         Integer totalPagar = totalPagar(valorBoleta,cantidadAsientos,nroCuotas,optionSelect);
 
-        System.out.println(totalPagar);
+        JOptionPane.showMessageDialog(null, """
+                                            Valor Boleta: $"""+valorBoleta+"\n"+"""
+                                                                             Cantidad de asientos asignados: """+cantidadAsientos+"\n"+"""
+                                                                                                                                  Total a pagar: $"""+totalPagar+"\n"+"""
+                                                                                                                                                                 ¡Disfruta tu película!""");
         
         
 
         
         
         
-        
-        
-        
-
-    
     } 
 }
