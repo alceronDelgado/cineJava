@@ -159,11 +159,10 @@ public class Cine {
                     opciones,
                     opciones[0]);
 
+            System.out.println("opcion"+opcion);
             if (opcion == 0) {
                 i = 0;
 
-            } else {
-                break;
             }
 
             //SECCION DE OPCIONES
@@ -172,7 +171,7 @@ public class Cine {
             JComboBox combo1 = new JComboBox<String>(opcionesComboBox);
 
             //Método de pago.
-            while (intentos < 1) {
+
 
                 Integer metodoPago = JOptionPane.showConfirmDialog(
                         null,
@@ -185,20 +184,19 @@ public class Cine {
                 if (metodoPago == JOptionPane.CANCEL_OPTION || metodoPago == JOptionPane.CLOSED_OPTION) {
 
                     JOptionPane.showMessageDialog(null, "No se seleccionó ninguna opción.");
-                    intentos++;
-                    continue;
+                    
 
                 } else if (metodoPago == JOptionPane.OK_OPTION) {
                     //Capturar la opción seleccionada.
                     optionSelect = (String) combo1.getSelectedItem();
+                    //break;
+                }
+
+                if (intentos <= 6) {
                     break;
                 }
 
-                if (intentos <= 1) {
-                    break;
-                }
 
-            }
 
         }
 
@@ -207,6 +205,7 @@ public class Cine {
             JOptionPane.showMessageDialog(null, "Exit.");
 
         } else {
+            
 
             Integer totalPagar = totalPagar(valorBoleta, asientos, nroCuotas, optionSelect);
 
