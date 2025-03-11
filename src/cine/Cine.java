@@ -13,9 +13,9 @@ import javax.swing.*;
 public class Cine {
 
     //Función para guardar los asientos en la matriz.
-    public static String[][] definirAsientos() {
+    public static String[][] definirAsientos(String asientos[][]) {
 
-        String asientos[][] = new String[11][11];
+        
         //StringBuilder salaCine = new StringBuilder();
         String salaCine[][] = new String[11][11];
         String asiento = "(O)";
@@ -48,10 +48,10 @@ public class Cine {
     }
 
     //Función para asignar el asiento.
-    public static String[][] asignarAsiento(String[] coordenadas, String salaCine[][]) {
+    public static String[][] asignarAsiento(String[] coordenadas, String salaCine[][],Integer fila,Integer columna) {
         String asientoReservado = "(+)";
-        int fila = Integer.parseInt(coordenadas[0]);
-        int columna = Integer.parseInt(coordenadas[1]);
+        //Integer fila = Integer.parseInt(coordenadas[0]);
+        //Integer columna = Integer.parseInt(coordenadas[1]);
 
         //Con las coordenadas vemos si hay un asiento vacio, si esta vacio lo asignamos como asiento reservado.
         if (salaCine[fila][columna].equals("(O)")) {
@@ -83,7 +83,6 @@ public class Cine {
                     totalAPagar = (asientos * valorBoleta) / nroCuotas;
                     break;
                 }
-
             }
 
         }
@@ -95,9 +94,27 @@ public class Cine {
         return totalAPagar;
     }
 
+    
+    public static boolean calcularDimension(String asientosArr[][], Integer filaCoordenada, Integer columnaCoordenada ){
+        int filas = asientosArr.length; 
+        int columnas = asientosArr[0].length;
+        
+        if((filaCoordenada >= filas) || (columnaCoordenada >= columnas)){
+            JOptionPane.showMessageDialog(null, "Rango digitado incorrecto.");
+            return true;
+        }
+        
+        return false;
+        
+    
+    }
+    
     public static void main(String[] args) {
 
-        String salaCineActual[][] = definirAsientos();
+        //Dimensión de la matriz de la sala de cine.
+        String asientosArr[][] = new String[11][11];
+
+        String salaCineActual[][] = definirAsientos(asientosArr);
         String sc = mostrarSala(salaCineActual);
         Integer i = 0;
         Integer valorBoleta = 12000;
@@ -106,24 +123,33 @@ public class Cine {
         Integer asientos = 0;
         Integer nroCuotas = 0;
         String optionSelect = "";
-
         Integer intentos = 0;
 
         //Uso el acomulador para determinar la cantidad de asientos que elige.
         while (true) {
 
             cantidadAsientos = JOptionPane.showInputDialog(null, "Bienvenido a Cinemax. \n Digite la cantidad de asientos que desea reservar");
-
+            
+            
+            
+            //puede ir en una función void.
             if (cantidadAsientos == null) {
                 JOptionPane.showMessageDialog(null, "Sales del programa");
                 break;
-
+            }
+            
+            //Transformo los asientos digitads a enteros.            
+            asientos = Integer.parseInt(cantidadAsientos);
+            
+            
+            //PUEDE IR DENTRO DE UNA FUNCIÓN VOID.
+            //Valido para evitar que se ejecute el programa en caso de que haya digitado un valor menor a 0.
+            if(asientos <= 0){
+                JOptionPane.showMessageDialog(null,"Error, cantidad de asientos incorrecto", "Error",JOptionPane.ERROR_MESSAGE);
+                continue;
             }
 
             try {
-
-                //Transformo los asientos a interos.
-                asientos = Integer.parseInt(cantidadAsientos);
 
                 while (i < asientos) {
 
@@ -136,9 +162,24 @@ public class Cine {
 
                     //Asigno lo asientos en base a las coordenadas
                     String[] coordenadas = coorAsientos.split(":");
+                    
+                    Integer filaCoordenada = Integer.parseInt(coordenadas[0]);
+                    Integer columnaCoordenada = Integer.parseInt(coordenadas[1]);
+                    
+                    
+                    //Valido si el valor que se separo en el método split es 2, es decir, fila y columna.
+                    if(coordenadas.length != 2){
+                        JOptionPane.showMessageDialog(null, "Valor de rango incorrecto.");
+                        continue;
+                    }
+                    
+                    //Valido la si la coordenada es mayor o menor a 0 del tamaño de la matriz.
+                    if (calcularDimension(asientosArr,filaCoordenada,columnaCoordenada)) {
+                        continue;
+                    }
 
                     //Asigno lo asientos en base a las coordenadas.
-                    salaCineActual = asignarAsiento(coordenadas, salaCineActual);
+                    salaCineActual = asignarAsiento(coordenadas, salaCineActual,filaCoordenada,columnaCoordenada);
                     i++;
                     //Guardo la cantidad de asientos para poder calcular el total a pagar.
                     cantidadAsientos += 1;
@@ -146,7 +187,7 @@ public class Cine {
 
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, "Error inesperado: " + e.getMessage());
-                break;
+                
             }
 
             int opcion = JOptionPane.showOptionDialog(
@@ -158,33 +199,29 @@ public class Cine {
                     null,
                     opciones,
                     opciones[0]);
-
-            System.out.println("opcion"+opcion);
+            
             if (opcion == 0) {
                 i = 0;
 
             }
 
-            //SECCION DE OPCIONES
-            //Combobox
+            //Sección de opciones, comboBox
             String[] opcionesComboBox = {"Efectivo", "Tarjeta"};
             JComboBox combo1 = new JComboBox<String>(opcionesComboBox);
 
             //Método de pago.
-
-
                 Integer metodoPago = JOptionPane.showConfirmDialog(
                         null,
                         combo1,
                         "Selecciona una opción",
                         JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE
                 );
-
+               
                 //Si el usuario presiona el botón cancelar o el botón de cerrar ventana.
                 if (metodoPago == JOptionPane.CANCEL_OPTION || metodoPago == JOptionPane.CLOSED_OPTION) {
 
                     JOptionPane.showMessageDialog(null, "No se seleccionó ninguna opción.");
-                    
+                    break;
 
                 } else if (metodoPago == JOptionPane.OK_OPTION) {
                     //Capturar la opción seleccionada.
